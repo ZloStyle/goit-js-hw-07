@@ -15,20 +15,25 @@ const listImg = galleryItems.map(({preview, original, description}) =>
     </a>
 </li>`).join('')
 
-colection.insertAdjacentHTML('afterbegin', listImg)
 // console.log(galleryItems);
+colection.innerHTML = listImg;
 
-colection.onClick = (event) => {
+const onClick = (event) => {
     event.preventDefault()
     if(!event.target.classList.contains("gallery__image")){
         return
     };
     
-    const instance = basicLightbox.create(`<img width='1400' height='900' src='${event.target.dataset.source}'>`).show();
+    const instance = basicLightbox.create(`<img width='1400' height='900' src='${event.target.dataset.source}'>`,{
+        onShow: () => {window.addEventListener("keydown", onEscPress);},
+        onClose: () => {window.removeEventListener("keydown", onEscPress);}, 
+    }) 
+    instance.show();
 
-    window.addEventListener('keydown', (event) => {
-       if  (event.code === 'Escape') {
-        instance.close()
-       }
-    });
+   function onEscPress (event) {
+    if (event.code === "Escape") {
+        instance.close();
+    }
+   }
 }
+colection.addEventListener("click", onClick);
